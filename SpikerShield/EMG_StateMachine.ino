@@ -32,7 +32,7 @@ void loop(){
     delay(2);
   }
   for(int i = 0; i < 10; i++){   //average the ten readings
-    finalReading += reading[i];
+    finalReading += abs(reading[i]);    // Take the absolute value of the reading.
   }
   finalReading /= 10;
   for(int j = 0; j < NUM_LED; j++){  //write all LEDs low
