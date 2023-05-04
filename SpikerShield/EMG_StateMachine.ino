@@ -1,3 +1,4 @@
+#include <dsp.h> // Need to add library to Arduino IDE
 
 // DO NOT CHANGE /////////////////////////////////////
 #define NUM_LED 6  //sets the maximum numbers of LEDs
@@ -31,6 +32,20 @@ void loop(){
     reading[i] = analogRead(A0) * multiplier;
     delay(2);
   }
+
+
+  // Apply bandpass filter to reading
+
+  int filteredReading[10];
+  for (int i = 0; i < 10; i++) {
+  filteredReading[i] = 0.0976 * reading[i] + 0.9054 * filteredReading[max(i-1,0)] - 0.0976 * filteredReading[max(i-2,0)];
+  }
+  for (int i = 0; i < 10; i++) {
+    reading[i] = filteredReading[i];
+  }
+
+  //
+
   for(int i = 0; i < 10; i++){   //average the ten readings
     finalReading += abs(reading[i]);    // Take the absolute value of the reading.
   }
@@ -78,3 +93,21 @@ void StateMachine(bool active){
   }
 
 }
+
+// Function to apply a bandpass filter to an int array
+int* applyBandpass(int* input) {
+  static float coefficients[5];
+  dsp::design::butterworth_bandpass(20, 500, 2, coefficients);  // 20 Hz to 500 Hz bandpass filter with 2nd order
+  dsp::Filter<float> bandpass(coefficients);
+  static float filteredReading[NUM_READINGS];
+  for (int i = 0; i < NUM_READINGS; i++) {
+    filteredReading[i] = bandpass.process(input[i]);
+  }
+  static int filteredIntReading[NUM_READINGS];
+  for (int i = 0; i < NUM_READINGS; i++) {
+    filteredIntReading[i] = (int)filteredReading[i];
+  }
+  return filteredIntReading;
+}
+
+
