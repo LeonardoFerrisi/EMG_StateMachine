@@ -1,11 +1,4 @@
-// Setup Servo
 #include <filters.h> // See README for information on setting up filters library
-#include <Servo.h>
-
-// Servo Setup //////////////////////////////////////
-Servo myservo;  // create servo object to control a servo
-#define SERVO_PIN 2                            //pin for servo motor
-int pos = 8; // Default start pos
 
 // DO NOT CHANGE /////////////////////////////////////
 #define NUM_LED 6  //sets the maximum numbers of LEDs
@@ -15,28 +8,23 @@ int finalReading;
 byte litLeds = 0;
 byte multiplier = 1;
 byte leds[] = {8, 9, 10, 11, 12, 13};
-
-bool state = false;
 /////////////////////////////////////////////////////
 
 #define MAX 150     //maximum posible reading. TWEAK THIS VALUE!!
 
 // You change! Depending on how you wire your EMG sensors, your thereshold
 // may be better off at a higher or lower value.
-int THRESHOLD = 150;     // You define, may change to the amoung the LED's active
+int THRESHOLD = 100;     // You define, may change to the amoung the LED's active
 
 // You add (for state machine)
 #define ledPin 2    // Example, turn on LED attatched to pin 2
 
 void setup(){
-
-  myservo.attach(SERVO_PIN);
   Serial.begin(9600); //begin serial communications
   for(int i = 0; i < NUM_LED; i++){ //initialize LEDs as outputs
     pinMode(leds[i], OUTPUT);
   }
   pinMode(ledPin, OUTPUT);
-
 }
 
 void loop(){
@@ -44,10 +32,23 @@ void loop(){
     reading[i] = analogRead(A0) * multiplier;
     delay(2);
   }
-  for(int i = 0; i < 10; i++){   //average the ten readings
-    finalReading += abs(reading[i]);
+
+
+  // Apply bandpass filter to reading
+
+  int filteredReading[10];
+  for (int i = 0; i < 10; i++) {
+  filteredReading[i] = 0.0976 * reading[i] + 0.9054 * filteredReading[max(i-1,0)] - 0.0976 * filteredReading[max(i-2,0)];
   }
-  
+  for (int i = 0; i < 10; i++) {
+    reading[i] = filteredReading[i];
+  }
+
+  //
+
+  for(int i = 0; i < 10; i++){   //average the ten readings
+    finalReading += abs(reading[i]);    // Take the absolute value of the reading.
+  }
   finalReading /= 10;
   for(int j = 0; j < NUM_LED; j++){  //write all LEDs low
     digitalWrite(leds[j], LOW);
@@ -79,32 +80,34 @@ void loop(){
 }
 
 void StateMachine(bool active){
-  if (active && (state == false)){
+  if (active){
     // ON STATE
-
-    myservo.write(50);
-    state = true;
-    // digitalWrite(ledPin, HIGH);
+    digitalWrite(ledPin, HIGH);
     Serial.print("ON");
     Serial.print("\t");
-  } else if ((active==false) && (state == true)){
-    // INACTIVE 
-    myservo.write(8);
-    state = false;
-    // digitalWrite(ledPin, LOW);
+  } else {
+    // INACTIVE STATE
+    digitalWrite(ledPin, LOW);
     Serial.print("OFF");
     Serial.print("\t");
   }
 
-  else {
-    if (state == true){
-      Serial.print("ON");
-      Serial.print("\t");
-    }
-    else{
-      Serial.print("OFF");
-    Serial.print("\t");
-    }
-  }
-
 }
+
+// Function to apply a bandpass filter to an int array
+int* applyBandpass(int* input) {
+  static float coefficients[5];
+  dsp::design::butterworth_bandpass(20, 500, 2, coefficients);  // 20 Hz to 500 Hz bandpass filter with 2nd order
+  dsp::Filter<float> bandpass(coefficients);
+  static float filteredReading[NUM_READINGS];
+  for (int i = 0; i < NUM_READINGS; i++) {
+    filteredReading[i] = bandpass.process(input[i]);
+  }
+  static int filteredIntReading[NUM_READINGS];
+  for (int i = 0; i < NUM_READINGS; i++) {
+    filteredIntReading[i] = (int)filteredReading[i];
+  }
+  return filteredIntReading;
+}
+
+

@@ -7,4 +7,3 @@ Template Code for Designing State Machines controlled by EMG
 * SpikerShield (*Under Construction*)
 * Emotibit (*Under Construction*)
 * OpenBCI (*Under Construction*)
-
