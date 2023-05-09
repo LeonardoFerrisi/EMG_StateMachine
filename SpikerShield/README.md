@@ -9,9 +9,12 @@
 * 2 **9V batteries**
 * 2 **9V battery connectors**
 * 1 **Arduino Servo Motor** 
+* 1 3D Printed Claw to attatch to servo motor (https://www.thingiverse.com/thing:4811915)
 
 # Using Filters library
 Copy the `libFilter` located in `EMG_StateMachine\libraries\libFilter` folder into your **Arduino** `libraries` folder. Typically this is located in `Documents\Arduino\libraries`.
+
+# Using Servo Library
 
 ## Installing Pre-requisites
 
@@ -19,7 +22,6 @@ Copy the `libFilter` located in `EMG_StateMachine\libraries\libFilter` folder in
 Download the latest version of the Arduino IDE from [here](https://www.arduino.cc/en/Main/Software).
 
 ## **Default Setup:**
-
 
 ### Setting up EMG_StateMachine
 0. Make sure the the `filters` library is installed. See [Using Filters library](#using-filters-library).
@@ -32,6 +34,8 @@ Download the latest version of the Arduino IDE from [here](https://www.arduino.c
 1. Place the SpikerShield onto the arduino such that it alights and each pin enters a slot on the arduino base.
 2. Plug a **Servo Motor** into the top pins of the SpikerShield. (Note that the connector for the servo motor is specifically connected to the **D2** pin on the arduino)
 
+### Setting up a 3D printable claw to the Servo
+1. Please visit 
 
 ## Creating LED EMG - Controlled State Machine
 
@@ -41,3 +45,5 @@ Download the latest version of the Arduino IDE from [here](https://www.arduino.c
 
 - *Under Construction*
 * Try out some of the examples from **ArduinoExamples**
+
+## Combining state machines!
