@@ -82,12 +82,12 @@ void loop(){
 void StateMachine(bool active){
   if (active){
     // ON STATE
-    digitalWrite(ledPin, HIGH);
+    digitalWrite(ledPin, HIGH); // An example ON state, turning an LED on. You can insert different code here!
     Serial.print("ON");
     Serial.print("\t");
   } else {
     // INACTIVE STATE
-    digitalWrite(ledPin, LOW);
+    digitalWrite(ledPin, LOW); // An example OFF state, turning an LED off. You can insert different code here!
     Serial.print("OFF");
     Serial.print("\t");
   }
