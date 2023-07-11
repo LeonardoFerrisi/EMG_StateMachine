@@ -1,5 +1,3 @@
-#include <filters.h> // See README for information on setting up filters library
-
 // DO NOT CHANGE /////////////////////////////////////
 #define NUM_LED 6  //sets the maximum numbers of LEDs
 
@@ -93,21 +91,3 @@ void StateMachine(bool active){
   }
 
 }
-
-// Function to apply a bandpass filter to an int array
-int* applyBandpass(int* input) {
-  static float coefficients[5];
-  dsp::design::butterworth_bandpass(20, 500, 2, coefficients);  // 20 Hz to 500 Hz bandpass filter with 2nd order
-  dsp::Filter<float> bandpass(coefficients);
-  static float filteredReading[NUM_READINGS];
-  for (int i = 0; i < NUM_READINGS; i++) {
-    filteredReading[i] = bandpass.process(input[i]);
-  }
-  static int filteredIntReading[NUM_READINGS];
-  for (int i = 0; i < NUM_READINGS; i++) {
-    filteredIntReading[i] = (int)filteredReading[i];
-  }
-  return filteredIntReading;
-}
-
-
