@@ -1,5 +1,4 @@
 // Setup Servo
-#include <filters.h> // See README for information on setting up filters library
 #include <Servo.h>
 
 // Servo Setup //////////////////////////////////////
@@ -16,7 +15,7 @@ int reading[10];    // EMG window
 int finalReading;   // Final Average EMG reading
 byte litLeds = 0;                      
 byte multiplier = 1;
-
+byte leds[] = {8, 9, 10, 11, 12, 13};
 int READ_DELAY = 2; // Delay between readings
 /////////////////////////////////////////////////////
 
